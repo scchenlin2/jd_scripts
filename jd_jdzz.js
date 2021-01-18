@@ -42,17 +42,19 @@ if ($.isNode()) {
   cookiesArr.reverse();
   cookiesArr.push(...[$.getdata('CookieJD2'), $.getdata('CookieJD')]);
   cookiesArr.reverse();
+  cookiesArr = cookiesArr.filter(item => item !== "" && item !== null && item !== undefined);
 }
 const JD_API_HOST = 'https://api.m.jd.com/client.action';
 const inviteCodes = [
- `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-  `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-   `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-    `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-	 `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-	  `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-	   `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-	    `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
+  `Sv_VzQRob8VLRJxKb***A@S5KkcRB9K8lHVdhL0lP4JdA@SvPt6RRgQ9***TS@Sv_V6QRsb_F3XIR-b***A@S5KkcH2Vkpja9fl-G_KF3@S5KkcRktIoVaDIBL0wPZZdQ@S5KkcRB4a9lGDJEzxlvUIdg@S5KkcRkpK8FWEJk_3wfcOIg@S5KkcRxwd9wXQJE_yxvAMIA@S5KkcRU8do1HUcU-mx6UIIA`,
+`Sv_VzQRob8VLRJxKb***A@S5KkcRB9K8lHVdhL0lP4JdA@SvPt6RRgQ9***TS@Sv_V6QRsb_F3XIR-b***A@S5KkcH2Vkpja9fl-G_KF3@S5KkcRktIoVaDIBL0wPZZdQ@S5KkcRB4a9lGDJEzxlvUIdg@S5KkcRkpK8FWEJk_3wfcOIg@S5KkcRxwd9wXQJE_yxvAMIA@S5KkcRU8do1HUcU-mx6UIIA`,
+`Sv_VzQRob8VLRJxKb***A@S5KkcRB9K8lHVdhL0lP4JdA@SvPt6RRgQ9***TS@Sv_V6QRsb_F3XIR-b***A@S5KkcH2Vkpja9fl-G_KF3@S5KkcRktIoVaDIBL0wPZZdQ`,
+`Sv_VzQRob8VLRJxKb***A@S5KkcRB9K8lHVdhL0lP4JdA@SvPt6RRgQ9***TS@Sv_V6QRsb_F3XIR-b***A@S5KkcH2Vkpja9fl-G_KF3@S5KkcRktIoVaDIBL0wPZZdQ`,
+`Sv_VzQRob8VLRJxKb***A@S5KkcRB9K8lHVdhL0lP4JdA@SvPt6RRgQ9***TS@Sv_V6QRsb_F3XIR-b***A@S5KkcH2Vkpja9fl-G_KF3@S5KkcRktIoVaDIBL0wPZZdQ`,
+`Sv_VzQRob8VLRJxKb***A@S5KkcRB9K8lHVdhL0lP4JdA@SvPt6RRgQ9***TS@Sv_V6QRsb_F3XIR-b***A@S5KkcH2Vkpja9fl-G_KF3@S5KkcRktIoVaDIBL0wPZZdQ`,
+`Sv_VzQRob8VLRJxKb***A@S5KkcRB9K8lHVdhL0lP4JdA@SvPt6RRgQ9***TS@Sv_V6QRsb_F3XIR-b***A@S5KkcH2Vkpja9fl-G_KF3@S5KkcRktIoVaDIBL0wPZZdQ`,
+`Sv_VzQRob8VLRJxKb***A@S5KkcRB9K8lHVdhL0lP4JdA@SvPt6RRgQ9***TS@Sv_V6QRsb_F3XIR-b***A@S5KkcH2Vkpja9fl-G_KF3@S5KkcRktIoVaDIBL0wPZZdQ`,
+`Sv_VzQRob8VLRJxKb***A@S5KkcRB9K8lHVdhL0lP4JdA@SvPt6RRgQ9***TS@Sv_V6QRsb_F3XIR-b***A@S5KkcH2Vkpja9fl-G_KF3@S5KkcRktIoVaDIBL0wPZZdQ`,
 ]
 !(async () => {
   $.tuanList = []
@@ -60,7 +62,7 @@ const inviteCodes = [
   if (helpAuthor) await getAuthorShareCode('https://gitee.com/shylocks/updateTeam/raw/main/jd_zz.json');
   if (helpAuthor) await getAuthorShareCode('https://gitee.com/lxk0301/updateTeam/raw/master/jd_zz.json');
   if (!cookiesArr[0]) {
-    $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/', {"open-url": "https://bean.m.jd.com/"});
+    $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/bean/signIndex.action', {"open-url": "https://bean.m.jd.com/bean/signIndex.action"});
     return;
   }
   for (let i = 0; i < cookiesArr.length; i++) {
@@ -74,12 +76,10 @@ const inviteCodes = [
       await TotalBean();
       console.log(`\n******开始【京东账号${$.index}】${$.nickName || $.UserName}*********\n`);
       if (!$.isLogin) {
-        $.msg($.name, `【提示】cookie已失效`, `京东账号${$.index} ${$.nickName || $.UserName}\n请重新登录获取\nhttps://bean.m.jd.com/`, {"open-url": "https://bean.m.jd.com/"});
+        $.msg($.name, `【提示】cookie已失效`, `京东账号${$.index} ${$.nickName || $.UserName}\n请重新登录获取\nhttps://bean.m.jd.com/bean/signIndex.action`, {"open-url": "https://bean.m.jd.com/bean/signIndex.action"});
 
         if ($.isNode()) {
           await notify.sendNotify(`${$.name}cookie已失效 - ${$.UserName}`, `京东账号${$.index} ${$.UserName}\n请重新登录获取cookie`);
-        } else {
-          $.setdata('', `CookieJD${i ? i + 1 : ""}`);//cookie失效，故清空cookie。$.setdata('', `CookieJD${i ? i + 1 : "" }`);//cookie失效，故清空cookie。
         }
         continue
       }
@@ -261,7 +261,7 @@ function getUserInfo() {
           if (safeGet(data)) {
             data = JSON.parse(data);
             if (data.data.shareTaskRes) {
-              console.log(`\n您的${$.name}好友助力码为： ${data.data.shareTaskRes.itemId}\n`);
+              console.log(`\n【京东账号${$.index}（${$.nickName || $.UserName}）的${$.name}好友互助码】${data.data.shareTaskRes.itemId}\n`);
             } else {
               console.log(`已满5人助力,暂时看不到您的${$.name}好友助力码`)
             }
@@ -350,7 +350,7 @@ function readShareCode() {
           console.log(`${$.name} API请求失败，请检查网路重试`)
         } else {
           if (data) {
-            console.log(`随机取${randomCount}个码放到您固定的互助码后面`)
+            console.log(`随机取${randomCount}个码放到您固定的互助码后面(不影响已有固定互助)`)
             data = JSON.parse(data);
           }
         }
@@ -368,38 +368,17 @@ function readShareCode() {
 function shareCodesFormat() {
   return new Promise(async resolve => {
     // console.log(`第${$.index}个京东账号的助力码:::${$.shareCodesArr[$.index - 1]}`)
-    $.newShareCodes = [
-    `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-  `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-   `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-    `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-	 `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-	  `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-	   `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-	    `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-
-    ];
+    $.newShareCodes = [];
     if ($.shareCodesArr[$.index - 1]) {
       $.newShareCodes = $.shareCodesArr[$.index - 1].split('@');
     } else {
       console.log(`由于您第${$.index}个京东账号未提供shareCode,将采纳本脚本自带的助力码\n`)
-	 inviteCodes =[
-		    `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-		  `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-		   `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-		    `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-			 `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-			  `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-			   `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-			    `ACj***WnqmSyTMOD2iXnQ@AUWE5m6zDyjAKXmj43XVJlQ@ACTNfmquZzzUN@AUWE5m6zDyjAKXmj43XVJlQ@ACj***fnqiSxDwICWWXnQ@AUWE5wNbtnldiViWKtSo3@AUWE5mfjBmTdcCGj4iX0ZlA`,
-
-		    ];
       const tempIndex = $.index > inviteCodes.length ? (inviteCodes.length - 1) : ($.index - 1);
       $.newShareCodes = inviteCodes[tempIndex].split('@');
     }
     const readShareCodeRes = await readShareCode();
     if (readShareCodeRes && readShareCodeRes.code === 200) {
-    //  $.newShareCodes = [...new Set([...$.newShareCodes, ...(readShareCodeRes.data || [])])];
+      $.newShareCodes = [...new Set([...$.newShareCodes, ...(readShareCodeRes.data || [])])];
     }
     console.log(`第${$.index}个京东账号将要助力的好友${JSON.stringify($.newShareCodes)}`)
     resolve();
