@@ -162,10 +162,19 @@ if ($.isNode()) {
 }(this);
 !(async () => {
   if (!cookiesArr[0]) {
-    $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/', {"open-url": "https://bean.m.jd.com/"});
+    $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/bean/signIndex.action', {"open-url": "https://bean.m.jd.com/bean/signIndex.action"});
     return;
   }
   let count = 0
+
+  if (cookiesArr.length) {
+    console.log(`\n挂机开始，自动8s收一次金币`);
+    setInterval(async () => {
+      const promiseArr = cookiesArr.map(ck => getCoinForInterval(ck));
+      await Promise.all(promiseArr);
+    }, 8000);
+  }
+
   while (true) {
     count++
     console.log(`============开始第${count}次挂机=============`)
@@ -179,16 +188,10 @@ if ($.isNode()) {
         await TotalBean();
         console.log(`\n开始【京东账号${$.index}】${$.nickName || $.UserName}\n`);
         if (!$.isLogin) {
-          $.msg($.name, `【提示】cookie已失效`, `京东账号${$.index} ${$.nickName || $.UserName}\n请重新登录获取\nhttps://bean.m.jd.com/`, {"open-url": "https://bean.m.jd.com/"});
-
-          if ($.isNode()) {
-            await notify.sendNotify(`${$.name}cookie已失效 - ${$.UserName}`, `京东账号${$.index} ${$.UserName}\n请重新登录获取cookie`);
-          } else {
-            $.setdata('', `CookieJD${i ? i + 1 : ""}`);//cookie失效，故清空cookie。$.setdata('', `CookieJD${i ? i + 1 : "" }`);//cookie失效，故清空cookie。
-          }
+         $.log(`\n京东账号${$.index} ${$.nickName || $.UserName}\ncookie已过期,请重新登录获取\n`)
           continue
         }
-        await jdJxStory()
+        await jdCrazyJoy()
       }
     }
     $.log(`\n\n`)
@@ -201,7 +204,7 @@ if ($.isNode()) {
     $.done();
   })
 
-async function jdJxStory() {
+async function jdCrazyJoy() {
   $.coin = 0
   $.bean = 0
 
@@ -210,6 +213,22 @@ async function jdJxStory() {
   await $.wait(1000)
   await getJoyShop()
   await $.wait(1000)
+  if ($.joyIds && $.joyIds.length > 0) {
+    $.log('当前JOY分布情况')
+    $.log(`\n${$.joyIds[0]} ${$.joyIds[1]} ${$.joyIds[2]} ${$.joyIds[3]}`)
+    $.log(`${$.joyIds[4]} ${$.joyIds[5]} ${$.joyIds[6]} ${$.joyIds[7]}`)
+    $.log(`${$.joyIds[8]} ${$.joyIds[9]} ${$.joyIds[10]} ${$.joyIds[11]}\n`)
+  }
+
+  // 如果格子全部被占有且没有可以合并的JOY，只能回收低级的JOY (没有34级JOY时才会执行)
+  if(checkHasFullOccupied() && !checkCanMerge() && !checkHas34Level()) {
+    const minJoyId = Math.min(...$.joyIds);
+    const boxId = $.joyIds.indexOf(minJoyId);
+    console.log(`格子全部被占有且没有可以合并的JOY，回收${boxId + 1}号位等级为${minJoyId}的JOY`)
+    await sellJoy(minJoyId, boxId);
+    await getJoyList();
+  }
+
   for (let i = 0; i < $.joyIds.length; ++i) {
     if (!$.canBuy) {
       $.log(`金币不足，跳过购买`)
@@ -246,6 +265,31 @@ async function jdJxStory() {
   await getUserBean()
   await $.wait(5000)
   console.log(`当前信息：${$.bean} 京豆，${$.coin} 金币`)
+}
+
+function checkHasFullOccupied() {
+  return !$.joyIds.includes(0);
+}
+
+// 查询是否有34级JOY
+function checkHas34Level() {
+  return $.joyIds.includes(34);
+}
+
+function checkCanMerge() {
+  let obj = {};
+  let canMerge = false;
+  $.joyIds.forEach((vo, idx) => {
+    if (vo !== 0 && vo !== 34) {
+      if (obj[vo]) {
+        obj[vo].push(idx)
+        canMerge = true;
+      } else {
+        obj[vo] = [idx]
+      }
+    }
+  });
+  return canMerge;
 }
 
 function getJoyList() {
@@ -286,8 +330,14 @@ function getJoyShop() {
           data = JSON.parse(data);
           if (data.success && data.data && data.data.shop) {
             const shop = data.data.shop.filter(vo => vo.status === 1) || []
-            $.buyJoyLevel = shop.length ? shop[shop.length - 1]['joyId'] : 1
-            $.cost = shop.length ? shop[shop.length - 1]['coins'] : Infinity
+            $.buyJoyLevel = shop.length ? shop[shop.length - 1]['joyId'] : 1;//可购买的最大等级
+            if ($.isNode() && process.env.BUY_JOY_LEVEL) {
+              $.log(`当前可购买的最高JOY等级为${$.buyJoyLevel}级\n`)
+              $.buyJoyLevel = (process.env.BUY_JOY_LEVEL * 1) > $.buyJoyLevel ? $.buyJoyLevel : process.env.BUY_JOY_LEVEL * 1;
+              $.cost = shop[$.buyJoyLevel - 1]['coins']
+            } else {
+              $.cost = shop.length ? shop[shop.length - 1]['coins'] : Infinity
+            }
           }
         }
       } catch (e) {
@@ -342,6 +392,38 @@ function buyJoy(joyId) {
               return
             }
             $.log(`购买${joyId}级joy成功，剩余金币【${data.data.totalCoins}】`)
+            $.coin = data.data.totalCoins
+          } else {
+            console.log(data.message)
+          }
+        }
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve(data);
+      }
+    })
+  })
+}
+
+// 出售（回收）joy
+function sellJoy(joyId, boxId) {
+  const body = {"action": "SELL", "joyId": joyId, "boxId": boxId}
+  return new Promise((resolve) => {
+    $.get(taskUrl('crazyJoy_joy_trade', JSON.stringify(body)), async (err, resp, data) => {
+      try {
+        if (err) {
+          console.log(`${JSON.stringify(err)}`)
+          console.log(`${$.name} API请求失败，请检查网路重试`)
+        } else {
+          data = JSON.parse(data);
+          if (data.success) {
+            if (data.data.eventInfo) {
+              await openBox(data.data.eventInfo.eventType, data.data.eventInfo.eventRecordId)
+              $.canBuy = false
+              return
+            }
+            $.log(`回收${joyId}级joy成功，剩余金币【${data.data.totalCoins}】`)
             $.coin = data.data.totalCoins
           } else {
             console.log(data.message)
@@ -418,12 +500,46 @@ function getCoin() {
             if (data.data && data.data.tryMoneyJoyBeans) {
               console.log(`分红狗生效中，预计获得 ${data.data.tryMoneyJoyBeans} 京豆奖励`)
             }
-            if (data.data && data.data.totalCoinAmount)
-              $.coin = data.data.totalCoinAmount
+            if (data.data && data.data.totalCoinAmount) {
+              $.coin = data.data.totalCoinAmount;
+            } else {
+              $.coin = `获取当前金币数量失败`
+            }
             if (data.data && data.data.luckyBoxRecordId) {
-              await openBox(data.data.luckyBoxRecordId)
-            } else
-              $.log(`产出金币信息获取失败`)
+              await openBox('LUCKY_BOX_DROP',data.data.luckyBoxRecordId)
+            }
+            if (data.data) {
+              $.log(`此次在线收益：获得 ${data.data['coins']} 金币`)
+            }
+          }
+        }
+      } catch (e) {
+        $.logErr(e, resp)
+      } finally {
+        resolve();
+      }
+    })
+  })
+}
+
+// 需传入cookie，不能使用全局的cookie
+function getCoinForInterval(taskCookie) {
+  return new Promise(async resolve => {
+    $.get(taskUrl('crazyJoy_joy_produce', '', taskCookie), async (err, resp, data) => {
+      try {
+        if (err) {
+          console.log(`${JSON.stringify(err)}`)
+          console.log(`${$.name} API请求失败，请检查网路重试`)
+        } else {
+          if (safeGet(data)) {
+            // const userName = decodeURIComponent(taskCookie.match(/pt_pin=(.+?);/) && taskCookie.match(/pt_pin=(.+?);/)[1])
+            // data = JSON.parse(data);
+            // if (data.data && data.data.tryMoneyJoyBeans) {
+            //   console.log(`【京东账号 ${userName}】分红狗生效中，预计获得 ${data.data.tryMoneyJoyBeans} 京豆奖励`)
+            // }
+            // if (data.data) {
+            //   $.log(`【京东账号 ${userName}】此次在线收益：获得 ${data.data['coins']} 金币`)
+            // }
           }
         }
       } catch (e) {
@@ -436,7 +552,6 @@ function getCoin() {
 }
 
 function openBox(eventType = 'LUCKY_BOX_DROP', boxId) {
-  console.log(`openBox:${eventType}`)
   let body = { eventType, "eventRecordId": boxId}
   return new Promise(async resolve => {
     $.get(taskUrl('crazyJoy_event_getVideoAdvert', JSON.stringify(body)), async (err, resp, data) => {
@@ -448,9 +563,9 @@ function openBox(eventType = 'LUCKY_BOX_DROP', boxId) {
           if (safeGet(data)) {
             data = JSON.parse(data);
             if (data['success']) {
-              $.log(`点击幸运盒子成功，剩余观看视频次数：${data.data.advertViewTimes}, ${data.data.advertViewTimes > 0 ? '等待30秒' : '跳出'}`)
+              $.log(`点击幸运盒子成功，剩余观看视频次数：${data.data.advertViewTimes}, ${data.data.advertViewTimes > 0 ? '等待32秒' : '跳出'}`)
               if (data.data.advertViewTimes > 0) {
-                await $.wait(30000)
+                await $.wait(32000)
                 await rewardBox(eventType, boxId);
               }
             }
@@ -522,7 +637,7 @@ function getGrowState() {
     })
   })
 }
-function taskUrl(functionId, body = '') {
+function taskUrl(functionId, body = '', taskCookie = cookie) {
   let t = Date.now().toString().substr(0, 10)
   let e = body || ""
   e = $.md5("aDvScBv$gGQvrXfva8dG!ZC@DA70Y%lX" + e + t)
@@ -530,11 +645,11 @@ function taskUrl(functionId, body = '') {
   return {
     url: `${JD_API_HOST}?uts=${e}&appid=crazy_joy&functionId=${functionId}&body=${escape(body)}&t=${t}`,
     headers: {
-      'Cookie': cookie,
+      'Cookie': taskCookie,
       'Host': 'api.m.jd.com',
       'Accept': '*/*',
       'Connection': 'keep-alive',
-      "User-Agent": $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0") : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0"),
+      "User-Agent": $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0"),
       'Accept-Language': 'zh-cn',
       'Referer': 'https://crazy-joy.jd.com/',
       'origin': 'https://crazy-joy.jd.com',
@@ -567,7 +682,7 @@ function TotalBean() {
         "Connection": "keep-alive",
         "Cookie": cookie,
         "Referer": "https://wqs.jd.com/my/jingdou/my.shtml?sceneval=2",
-        "User-Agent": $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0") : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0")
+        "User-Agent": $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0")
       }
     }
     $.post(options, (err, resp, data) => {
